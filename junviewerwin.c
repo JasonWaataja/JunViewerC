@@ -17,6 +17,7 @@
 
 #include <gtk/gtk.h>
 #include "junviewerapp.h"
+#include <stdio.h>
 
 struct _JunViewerWindow
 {
@@ -38,6 +39,8 @@ jun_viewer_window_init(JunViewerWindow *app)
 static void
 jun_viewer_window_class_init(JunViewerWindowClass *class)
 {
+  gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS (class),
+					      "/com/waataja/junviewer/window.ui");
 }
 
 JunViewerWindow *
