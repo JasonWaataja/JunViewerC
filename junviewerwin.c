@@ -22,8 +22,6 @@
 struct _JunViewerWindow
 {
   GtkApplicationWindow parent;
-
-  GtkImage* jun_image;
 };
 
 struct _JunViewerWindowClass
@@ -31,7 +29,15 @@ struct _JunViewerWindowClass
   GtkApplicationWindowClass parent_class;
 };
 
-G_DEFINE_TYPE(JunViewerWindow, jun_viewer_window, GTK_TYPE_APPLICATION_WINDOW);
+
+typedef struct _JunViewerWindowPrivate JunViewerWindowPrivate;
+struct _JunViewerWindowPrivate
+{
+  GtkImage* jun_image;
+  GtkEventBox *click_box;
+};
+
+G_DEFINE_TYPE_WITH_PRIVATE(JunViewerWindow, jun_viewer_window, GTK_TYPE_APPLICATION_WINDOW);
 
 static void
 jun_viewer_window_init(JunViewerWindow *win)
@@ -44,7 +50,8 @@ jun_viewer_window_class_init(JunViewerWindowClass *class)
 {
   gtk_widget_class_set_template_from_resource(GTK_WIDGET_CLASS (class),
                                               "/com/waataja/junviewer/window.ui");
-  gtk_widget_class_bind_template_child(GTK_WIDGET_CLASS(class), JunViewerWindow, jun_image);
+  gtk_widget_class_bind_template_child_private(GTK_WIDGET_CLASS(class), JunViewerWindow, jun_image);
+  gtk_widget_class_bind_template_child_private(GTK_WIDGET_CLASS(class), JunViewerWindow, click_box);
 }
 
 JunViewerWindow *
@@ -99,7 +106,7 @@ GList *get_jun_images_internal()
 }
 
 void
-jun_viwer_window_load_jun(JunViewerWindow *self)
+jun_viewer_window_load_jun(JunViewerWindow *self)
 {
   GList *jun_images = get_jun_images();
 }
