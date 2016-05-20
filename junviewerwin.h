@@ -29,4 +29,10 @@ GType jun_viewer_window_get_type(void);
 JunViewerWindow *jun_viewer_window_new(JunViewerApp *app);
 void jun_viewer_window_open(JunViewerWindow *win, GFile *file);
 
+const char *jun_directory = "res";
+
+GList *get_jun_images();
+GList *get_jun_images_internal();
+void jun_viewer_window_load_jun(JunViewerWindow* self);
+
 #endif /* JUNVIEWERWIN_H */

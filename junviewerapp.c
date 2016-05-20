@@ -76,7 +76,7 @@ JunViewerApp *
 jun_viewer_app_new(void)
 {
   return g_object_new(JUN_VIEWER_APP_TYPE,
-		      "application-id", "org.gtk.junviewerapp",
+		      "application-id", "com.waataja.junviewerapp",
 		      "flags", G_APPLICATION_HANDLES_OPEN,
 		      NULL);
 }
