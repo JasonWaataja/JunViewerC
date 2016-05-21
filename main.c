@@ -75,14 +75,24 @@ static void load_random_jun()
   gtk_image_set_from_file(GTK_IMAGE(jun_image), g_file_get_path(jun_file));
 
   GdkPixbuf *buf = gtk_image_get_pixbuf(GTK_IMAGE(jun_image));
-  /*int width = gdk_pixbuf_get_width(buf);*/
-  /*int height = gdk_pixbuf_get_height(buf);*/
+  int width = gdk_pixbuf_get_width(buf);
+  int height = gdk_pixbuf_get_height(buf);
+  gtk_widget_set_size_request(jun_image, width, height);
+  gtk_widget_set_size_request(jun_box, width, height);
+
+  gtk_widget_queue_resize(jun_image);
+  gtk_container_check_resize(GTK_CONTAINER(jun_box));
+  gtk_container_check_resize(GTK_CONTAINER(main_window));
+
+  /*gtk_container_remove(GTK_CONTAINER(main_window), jun_box);*/
+  /*gtk_container_add(GTK_CONTAINER(main_window), jun_box);*/
 }
 
 static void
 activate(GtkApplication* app, gpointer data)
 {
   main_window = gtk_application_window_new(app);
+  gtk_window_set_resizable(GTK_WINDOW(main_window), TRUE);
 
   jun_image = gtk_image_new();
 
