@@ -22,46 +22,98 @@ static GList *get_jun_list();
 static void load_random_jun();
 static void activate(GtkApplication *app,
                      gpointer data);
+static GList *get_reg_files_in_dir(const char *file_dir);
 
 GtkWidget *jun_image;
 GtkWidget *main_window;
 GtkWidget *jun_box;
 
 static GList *
-get_jun_list()
+get_reg_files_in_dir(const char *dir_path)
 {
-  GList *jun_list = NULL;
-  GFile *res_dir = g_file_new_for_path("/home/jason/git/JunViewerC/res/Jun");
-  GFileType file_type = g_file_query_file_type(res_dir, G_FILE_QUERY_INFO_NONE, NULL);
+  GList *file_list = NULL;
+
+  if (dir_path == NULL)
+    return NULL;
+
+  GFile *file_dir = g_file_new_for_path(dir_path);
+  GFileType file_type;
+  file_type = g_file_query_file_type(file_dir, G_FILE_QUERY_INFO_NONE, NULL);
   if (file_type == G_FILE_TYPE_DIRECTORY)
     {
-      GFileEnumerator *en = g_file_enumerate_children(res_dir,
-                                                      "*",
-                                                      G_FILE_QUERY_INFO_NONE,
-                                                      NULL,
-                                                      NULL);
+      GFileEnumerator *en;
+      en = g_file_enumerate_children(file_dir,
+                                     "*",
+                                     G_FILE_QUERY_INFO_NONE,
+                                     NULL,
+                                     NULL);
       GFileInfo *file_info;
-      GFile *jun_file;
+      GFile *temp_file;
       int result;
       result = g_file_enumerator_iterate(en,
                                          &file_info,
-                                         &jun_file,
+                                         &temp_file,
                                          NULL,
                                          NULL);
       while (result && file_info)
         {
-          if (g_file_info_get_file_type(file_info) == G_FILE_TYPE_REGULAR)
+          file_type = g_file_query_file_type(temp_file,
+                                             G_FILE_QUERY_INFO_NONE,
+                                             NULL);
+          if (file_type == G_FILE_TYPE_REGULAR)
             {
-              GFile *test_file = g_file_new_for_path(g_file_get_path(jun_file));
-              jun_list = g_list_append(jun_list, test_file);
+              const char *file_path = g_file_get_path(temp_file);
+              GFile *reg_file = g_file_new_for_path(file_path);
+              file_list = g_list_append(file_list, reg_file);
             }
           result = g_file_enumerator_iterate(en,
                                              &file_info,
-                                             &jun_file,
+                                             &temp_file,
                                              NULL,
                                              NULL);
         }
     }
+
+  return file_list;
+}
+
+static GList *
+get_jun_list()
+{
+  GList *jun_list = get_reg_files_in_dir("/home/jason/git/JunViewerC/res/Jun");
+  /*GList *jun_list = NULL;*/
+  /*GFile *res_dir = g_file_new_for_path("/home/jason/git/JunViewerC/res/Jun");*/
+  /*GFileType file_type = g_file_query_file_type(res_dir, G_FILE_QUERY_INFO_NONE, NULL);*/
+  /*if (file_type == G_FILE_TYPE_DIRECTORY)*/
+    /*{*/
+      /*GFileEnumerator *en = g_file_enumerate_children(res_dir,*/
+                                                      /*"*",*/
+                                                      /*G_FILE_QUERY_INFO_NONE,*/
+                                                      /*NULL,*/
+                                                      /*NULL);*/
+      /*GFileInfo *file_info;*/
+      /*GFile *jun_file;*/
+      /*int result;*/
+      /*result = g_file_enumerator_iterate(en,*/
+                                         /*&file_info,*/
+                                         /*&jun_file,*/
+                                         /*NULL,*/
+                                         /*NULL);*/
+      /*while (result && file_info)*/
+        /*{*/
+          /*if (g_file_info_get_file_type(file_info) == G_FILE_TYPE_REGULAR)*/
+            /*{*/
+              /*const char *file_path = g_file_get_path(jun_file);*/
+              /*GFile *reg_file = g_file_new_for_path(file_path);*/
+              /*jun_list = g_list_append(jun_list, reg_file);*/
+            /*}*/
+          /*result = g_file_enumerator_iterate(en,*/
+                                             /*&file_info,*/
+                                             /*&jun_file,*/
+                                             /*NULL,*/
+                                             /*NULL);*/
+        /*}*/
+    /*}*/
   return jun_list;
 }
 
@@ -75,17 +127,17 @@ static void load_random_jun()
   gtk_image_set_from_file(GTK_IMAGE(jun_image), g_file_get_path(jun_file));
 
   GdkPixbuf *buf = gtk_image_get_pixbuf(GTK_IMAGE(jun_image));
-  int width = gdk_pixbuf_get_width(buf);
-  int height = gdk_pixbuf_get_height(buf);
-  gtk_widget_set_size_request(jun_image, width, height);
-  gtk_widget_set_size_request(jun_box, width, height);
-
-  gtk_widget_queue_resize(jun_image);
-  gtk_container_check_resize(GTK_CONTAINER(jun_box));
-  gtk_container_check_resize(GTK_CONTAINER(main_window));
-
-  /*gtk_container_remove(GTK_CONTAINER(main_window), jun_box);*/
-  /*gtk_container_add(GTK_CONTAINER(main_window), jun_box);*/
+  if (buf != NULL)
+    {
+      int width = gdk_pixbuf_get_width(buf);
+      int height = gdk_pixbuf_get_height(buf);
+      gtk_window_resize(GTK_WINDOW(main_window), width, height);
+    } else {
+        GdkPixbufAnimation *ani = gtk_image_get_animation(GTK_IMAGE(jun_image));
+        int width = gdk_pixbuf_animation_get_width(ani);
+        int height = gdk_pixbuf_animation_get_height(ani);
+        gtk_window_resize(GTK_WINDOW(main_window), width, height);
+    }
 }
 
 static void
