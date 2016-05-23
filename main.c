@@ -120,6 +120,7 @@ activate(GtkApplication* app, gpointer data)
 {
   main_window = gtk_application_window_new(app);
   gtk_window_set_resizable(GTK_WINDOW(main_window), TRUE);
+  gtk_window_set_title(GTK_WINDOW(main_window), "Jun Viewer");
 
   GSimpleAction *sa = g_simple_action_new("FileAction", NULL);
   char *name = g_action_print_detailed_name("FileAction", NULL);
