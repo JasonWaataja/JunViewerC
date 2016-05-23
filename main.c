@@ -27,6 +27,7 @@ static GList *get_reg_files_in_dir(const char *file_dir);
 GtkWidget *jun_image;
 GtkWidget *main_window;
 GtkWidget *jun_box;
+GMenu *window_menu;
 
 static GList *
 get_reg_files_in_dir(const char *dir_path)
@@ -81,39 +82,6 @@ static GList *
 get_jun_list()
 {
   GList *jun_list = get_reg_files_in_dir("/home/jason/git/JunViewerC/res/Jun");
-  /*GList *jun_list = NULL;*/
-  /*GFile *res_dir = g_file_new_for_path("/home/jason/git/JunViewerC/res/Jun");*/
-  /*GFileType file_type = g_file_query_file_type(res_dir, G_FILE_QUERY_INFO_NONE, NULL);*/
-  /*if (file_type == G_FILE_TYPE_DIRECTORY)*/
-    /*{*/
-      /*GFileEnumerator *en = g_file_enumerate_children(res_dir,*/
-                                                      /*"*",*/
-                                                      /*G_FILE_QUERY_INFO_NONE,*/
-                                                      /*NULL,*/
-                                                      /*NULL);*/
-      /*GFileInfo *file_info;*/
-      /*GFile *jun_file;*/
-      /*int result;*/
-      /*result = g_file_enumerator_iterate(en,*/
-                                         /*&file_info,*/
-                                         /*&jun_file,*/
-                                         /*NULL,*/
-                                         /*NULL);*/
-      /*while (result && file_info)*/
-        /*{*/
-          /*if (g_file_info_get_file_type(file_info) == G_FILE_TYPE_REGULAR)*/
-            /*{*/
-              /*const char *file_path = g_file_get_path(jun_file);*/
-              /*GFile *reg_file = g_file_new_for_path(file_path);*/
-              /*jun_list = g_list_append(jun_list, reg_file);*/
-            /*}*/
-          /*result = g_file_enumerator_iterate(en,*/
-                                             /*&file_info,*/
-                                             /*&jun_file,*/
-                                             /*NULL,*/
-                                             /*NULL);*/
-        /*}*/
-    /*}*/
   return jun_list;
 }
 
@@ -145,6 +113,12 @@ activate(GtkApplication* app, gpointer data)
 {
   main_window = gtk_application_window_new(app);
   gtk_window_set_resizable(GTK_WINDOW(main_window), TRUE);
+
+  window_menu = g_menu_new();
+  GMenuItem *file_item = g_menu_item_new("File", "");
+  g_menu_insert_item(G_MENU(window_menu), 0, G_MENU_ITEM(file_item));
+
+  gtk_application_set_app_menu(app, G_MENU_MODEL(window_menu));
 
   jun_image = gtk_image_new();
 
