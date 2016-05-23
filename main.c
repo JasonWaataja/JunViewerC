@@ -29,6 +29,13 @@ GtkWidget *main_window;
 GtkWidget *jun_box;
 GMenu *window_menu;
 
+static void
+file_activate()
+{
+  g_print("file activate\n");
+}
+
+
 static GList *
 get_reg_files_in_dir(const char *dir_path)
 {
@@ -114,11 +121,15 @@ activate(GtkApplication* app, gpointer data)
   main_window = gtk_application_window_new(app);
   gtk_window_set_resizable(GTK_WINDOW(main_window), TRUE);
 
-  window_menu = g_menu_new();
-  GMenuItem *file_item = g_menu_item_new("File", "");
-  g_menu_insert_item(G_MENU(window_menu), 0, G_MENU_ITEM(file_item));
+  GSimpleAction *sa = g_simple_action_new("FileAction", NULL);
+  char *name = g_action_print_detailed_name("FileAction", NULL);
+  g_signal_connect(sa, "activate", G_CALLBACK(file_activate), NULL);
 
-  gtk_application_set_app_menu(app, G_MENU_MODEL(window_menu));
+  window_menu = g_menu_new();
+  g_menu_insert_item(window_menu, 0, g_menu_item_new("File", "FileAction"));
+  gtk_application_set_menubar(app, G_MENU_MODEL(window_menu));
+
+  gtk_application_window_set_show_menubar(GTK_APPLICATION_WINDOW(main_window), TRUE);
 
   jun_image = gtk_image_new();
 
