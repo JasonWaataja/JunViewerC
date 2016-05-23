@@ -1,1 +1,1 @@
-noremap <F5> :!./jvc<CR>
+noremap <F5> :wa<CR>:make<CR>:!./jvc<CR>
