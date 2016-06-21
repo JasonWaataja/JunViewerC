@@ -17,40 +17,139 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-static GFile *get_random_jun();
-static GList *get_jun_list();
-static void load_random_jun();
-static void activate(GtkApplication *app,
-                     gpointer data);
-static GList *get_reg_files_in_dir(const char *file_dir);
+/*const char *file_dir = "Jun";*/
 
-GtkWidget *jun_image;
-GtkWidget *main_window;
-GtkWidget *jun_box;
-GMenu *window_menu;
+static GFile *
+get_random_jun ();
+
+static GList *
+get_reg_files_in_dir (const char *file_dir);
 
 static void
-file_activate()
+on_main_window_destroy ();
+
+static void
+on_jun_image_box_button_press_event ();
+
+static void
+on_next_jun_button_clicked ();
+
+static void
+load_random_jun ();
+
+static void
+load_images_from_directory (const char *dir);
+
+static void
+select_image_dir ();
+
+static void
+save_current_jun ();
+
+static void
+on_quit_item_activate ();
+
+static void
+on_about_activate ();
+
+GList *file_list;
+/*GFile *current_directory;*/
+
+GtkWidget *main_window;
+GtkWidget *jun_image;
+GtkWidget *next_jun_button;
+GtkWidget *jun_image_box;
+
+
+int
+main (int argc,
+     char *argv[])
 {
-  g_print("file activate\n");
+  gtk_init (&argc, &argv);
+
+  srand(time(NULL));
+
+  GtkBuilder *builder;
+  builder = gtk_builder_new_from_file ("window.ui");
+
+  main_window = GTK_WIDGET (gtk_builder_get_object (builder, "main_window"));
+  jun_image = GTK_WIDGET (gtk_builder_get_object (builder, "jun_image"));
+  next_jun_button = GTK_WIDGET (gtk_builder_get_object (builder,
+                                                        "next_jun_button"));
+  jun_image_box = GTK_WIDGET (gtk_builder_get_object (builder,
+                                                      "jun_image_box"));
+  
+
+  g_signal_connect (G_OBJECT (main_window), "destroy",
+                    G_CALLBACK (on_main_window_destroy), NULL);
+  g_signal_connect (G_OBJECT (jun_image_box), "button-press-event",
+                    G_CALLBACK (on_jun_image_box_button_press_event), NULL);
+  g_signal_connect (G_OBJECT (next_jun_button), "clicked",
+                    G_CALLBACK (on_next_jun_button_clicked), NULL);
+  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
+                                                      "next_jun_item")),
+                    "activate",
+                    G_CALLBACK(load_random_jun),
+                    NULL);
+  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
+                                                      "open_item")),
+                    "activate",
+                    G_CALLBACK(select_image_dir),
+                    NULL);
+  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
+                                                      "save_item")),
+                    "activate",
+                    G_CALLBACK(save_current_jun),
+                    NULL);
+  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
+                                                      "quit_item")),
+                    "activate",
+                    G_CALLBACK(on_quit_item_activate),
+                    NULL);
+  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
+                                                      "about_item")),
+                    "activate",
+                    G_CALLBACK(on_about_activate),
+                    NULL);
+
+  gtk_builder_connect_signals (builder, NULL);
+  g_object_unref (builder);
+
+  load_images_from_directory("Jun");
+  gtk_widget_show (main_window);
+  load_random_jun();
+
+  gtk_main ();
+
+  return EXIT_SUCCESS;
 }
 
 
+static GFile *
+get_random_jun ()
+{
+  unsigned int length = g_list_length (file_list);
+  int rand_i = rand () % length;
+  file_list = g_list_first (file_list);
+  GFile *jun_file = g_list_nth (file_list, rand_i)->data;
+  return jun_file;
+}
+
 static GList *
-get_reg_files_in_dir(const char *dir_path)
+get_reg_files_in_dir (const char *dir_path)
 {
   GList *file_list = NULL;
 
   if (dir_path == NULL)
     return NULL;
 
-  GFile *file_dir = g_file_new_for_path(dir_path);
+  GFile *file_dir = g_file_new_for_path (dir_path);
   GFileType file_type;
-  file_type = g_file_query_file_type(file_dir, G_FILE_QUERY_INFO_NONE, NULL);
+  file_type = g_file_query_file_type (file_dir, G_FILE_QUERY_INFO_NONE, NULL);
   if (file_type == G_FILE_TYPE_DIRECTORY)
     {
       GFileEnumerator *en;
-      en = g_file_enumerate_children(file_dir,
+      en = g_file_enumerate_children (file_dir,
                                      "*",
                                      G_FILE_QUERY_INFO_NONE,
                                      NULL,
@@ -58,23 +157,23 @@ get_reg_files_in_dir(const char *dir_path)
       GFileInfo *file_info;
       GFile *temp_file;
       int result;
-      result = g_file_enumerator_iterate(en,
+      result = g_file_enumerator_iterate (en,
                                          &file_info,
                                          &temp_file,
                                          NULL,
                                          NULL);
       while (result && file_info)
         {
-          file_type = g_file_query_file_type(temp_file,
+          file_type = g_file_query_file_type (temp_file,
                                              G_FILE_QUERY_INFO_NONE,
                                              NULL);
           if (file_type == G_FILE_TYPE_REGULAR)
             {
-              const char *file_path = g_file_get_path(temp_file);
-              GFile *reg_file = g_file_new_for_path(file_path);
-              file_list = g_list_append(file_list, reg_file);
+              const char *file_path = g_file_get_path (temp_file);
+              GFile *reg_file = g_file_new_for_path (file_path);
+              file_list = g_list_append (file_list, reg_file);
             }
-          result = g_file_enumerator_iterate(en,
+          result = g_file_enumerator_iterate (en,
                                              &file_info,
                                              &temp_file,
                                              NULL,
@@ -85,28 +184,37 @@ get_reg_files_in_dir(const char *dir_path)
   return file_list;
 }
 
-static GList *
-get_jun_list()
+static void
+on_main_window_destroy ()
 {
-  GList *jun_list = get_reg_files_in_dir("/home/jason/git/JunViewerC/res/Jun");
-  return jun_list;
+  gtk_main_quit ();
 }
 
-static void load_random_jun()
+static void
+on_jun_image_box_button_press_event ()
 {
-  GList *jun_list = get_jun_list();
-  unsigned int length = g_list_length(jun_list);
-  int rand_i = rand() % length;
-  jun_list = g_list_first(jun_list);
-  GFile *jun_file = g_list_nth(jun_list, rand_i)->data;
-  gtk_image_set_from_file(GTK_IMAGE(jun_image), g_file_get_path(jun_file));
+  load_random_jun ();
+}
 
-  GdkPixbuf *buf = gtk_image_get_pixbuf(GTK_IMAGE(jun_image));
+static void
+on_next_jun_button_clicked ()
+{
+  load_random_jun ();
+}
+
+static void
+load_random_jun ()
+{
+  GFile *jun_file = get_random_jun ();
+  gtk_image_set_from_file (GTK_IMAGE (jun_image), g_file_get_path (jun_file));
+
+  GdkPixbuf *buf = gtk_image_get_pixbuf (GTK_IMAGE (jun_image));
   if (buf != NULL)
     {
       int width = gdk_pixbuf_get_width(buf);
       int height = gdk_pixbuf_get_height(buf);
       gtk_window_resize(GTK_WINDOW(main_window), width, height);
+      /*gtk_widget_set_size_request (GTK_WIDGET (jun_image), width, height);*/
     } else {
         GdkPixbufAnimation *ani = gtk_image_get_animation(GTK_IMAGE(jun_image));
         int width = gdk_pixbuf_animation_get_width(ani);
@@ -116,45 +224,103 @@ static void load_random_jun()
 }
 
 static void
-activate(GtkApplication* app, gpointer data)
+load_images_from_directory (const char *dir)
 {
-  main_window = gtk_application_window_new(app);
-  gtk_window_set_resizable(GTK_WINDOW(main_window), TRUE);
-  gtk_window_set_title(GTK_WINDOW(main_window), "Jun Viewer");
-
-  GSimpleAction *sa = g_simple_action_new("FileAction", NULL);
-  char *name = g_action_print_detailed_name("FileAction", NULL);
-  g_signal_connect(sa, "activate", G_CALLBACK(file_activate), NULL);
-
-  window_menu = g_menu_new();
-  g_menu_insert_item(window_menu, 0, g_menu_item_new("File", "FileAction"));
-  gtk_application_set_menubar(app, G_MENU_MODEL(window_menu));
-
-  gtk_application_window_set_show_menubar(GTK_APPLICATION_WINDOW(main_window), TRUE);
-
-  jun_image = gtk_image_new();
-
-  jun_box = gtk_event_box_new();
-  g_signal_connect(jun_box, "button_press_event", G_CALLBACK(load_random_jun), NULL);
-
-  gtk_container_add(GTK_CONTAINER(jun_box), jun_image);
-  gtk_container_add(GTK_CONTAINER(main_window), jun_box);
-
-  gtk_widget_show_all(main_window);
-
-  load_random_jun();
+  file_list = get_reg_files_in_dir(dir);
 }
 
-int main(int argc, char** argv)
+static void
+select_image_dir ()
 {
-  GtkApplication *app;
-  app = gtk_application_new("com.waataja.junviewer", G_APPLICATION_FLAGS_NONE);
-  g_signal_connect(app, "activate", G_CALLBACK(activate), NULL);
+  GtkWidget *dialog;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+  gint res;
 
-  int status;
-  status = g_application_run(G_APPLICATION(app), argc, argv);
-  g_object_unref(app);
+  dialog = gtk_file_chooser_dialog_new ("Open File",
+                                        GTK_WINDOW (main_window),
+                                        action,
+                                        "Cancel",
+                                        GTK_RESPONSE_CANCEL,
+                                        "Open",
+                                        GTK_RESPONSE_ACCEPT,
+                                        NULL);
 
-  return status;
+  res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+    {
+      char *filename;
+      GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+      filename = gtk_file_chooser_get_filename (chooser);
+      load_images_from_directory(filename);
+      g_free (filename);
+    }
+
+  gtk_widget_destroy (dialog);
+
+  load_random_jun ();
 }
 
+static void
+save_current_jun ()
+{
+  GtkWidget *dialog;
+  GtkFileChooser *chooser;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+  gint res;
+
+  dialog = gtk_file_chooser_dialog_new ("Save File",
+                                        GTK_WINDOW (main_window),
+                                        action,
+                                        "Cancel",
+                                        GTK_RESPONSE_CANCEL,
+                                        "Save",
+                                        GTK_RESPONSE_ACCEPT,
+                                        NULL);
+  chooser = GTK_FILE_CHOOSER (dialog);
+
+  gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+  gtk_file_chooser_set_current_name (chooser,
+                                     "Untitled image");
+
+  res = gtk_dialog_run (GTK_DIALOG (dialog));
+  if (res == GTK_RESPONSE_ACCEPT)
+    {
+      char *filename;
+      filename = gtk_file_chooser_get_filename (chooser);
+      GdkPixbuf *buf = gtk_image_get_pixbuf (GTK_IMAGE (jun_image));
+
+      if (buf != NULL)
+        {
+          gdk_pixbuf_save(buf, filename, "png", NULL, NULL);
+        }
+      else
+        {
+          dialog = gtk_message_dialog_new (GTK_WINDOW (main_window),
+                                           GTK_DIALOG_MODAL,
+                                           GTK_MESSAGE_ERROR,
+                                           GTK_BUTTONS_CLOSE,
+                                           "Error saving image. It might be a "
+                                           "gif, which isn't supported yet.");
+          gtk_dialog_run (GTK_DIALOG (dialog));
+          gtk_widget_destroy (dialog);
+        }
+      g_free (filename);
+    }
+
+  gtk_widget_destroy (dialog);
+}
+
+static void
+on_quit_item_activate ()
+{
+  gtk_widget_destroy (GTK_WIDGET (main_window));
+}
+
+static void
+on_about_activate ()
+{
+  gtk_show_about_dialog (NULL,
+                         "program-name", "JunViewerC",
+                         "title" "About JunViewerC",
+                         NULL);
+}
