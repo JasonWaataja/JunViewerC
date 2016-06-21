@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#define DEFAULT_IMAGE_WIDTH 540
+
 /*const char *file_dir = "Jun";*/
 
 static GFile *
@@ -59,6 +61,10 @@ GtkWidget *main_window;
 GtkWidget *jun_image;
 GtkWidget *next_jun_button;
 GtkWidget *jun_image_box;
+
+/* These are only used if it's a pixbuf and not an animation.  */
+GdkPixbuf *src_pixbuf;
+GdkPixbuf *current_pixbuf;
 
 
 int
@@ -208,18 +214,37 @@ load_random_jun ()
   GFile *jun_file = get_random_jun ();
   gtk_image_set_from_file (GTK_IMAGE (jun_image), g_file_get_path (jun_file));
 
-  GdkPixbuf *buf = gtk_image_get_pixbuf (GTK_IMAGE (jun_image));
-  if (buf != NULL)
+  GtkImageType image_type = gtk_image_get_storage_type (GTK_IMAGE (jun_image));
+
+  if (image_type == GTK_IMAGE_PIXBUF)
     {
-      int width = gdk_pixbuf_get_width(buf);
-      int height = gdk_pixbuf_get_height(buf);
-      gtk_window_resize(GTK_WINDOW(main_window), width, height);
-      /*gtk_widget_set_size_request (GTK_WIDGET (jun_image), width, height);*/
-    } else {
-        GdkPixbufAnimation *ani = gtk_image_get_animation(GTK_IMAGE(jun_image));
-        int width = gdk_pixbuf_animation_get_width(ani);
-        int height = gdk_pixbuf_animation_get_height(ani);
-        gtk_window_resize(GTK_WINDOW(main_window), width, height);
+      src_pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (jun_image));
+      int src_width = gdk_pixbuf_get_width (src_pixbuf);
+      int src_height = gdk_pixbuf_get_height (src_pixbuf);
+
+      int new_width = DEFAULT_IMAGE_WIDTH;
+      int new_height = new_width * src_height / src_width;
+      current_pixbuf = gdk_pixbuf_scale_simple (src_pixbuf,
+                                                new_width,
+                                                new_height,
+                                                GDK_INTERP_HYPER);
+      gtk_image_set_from_pixbuf (GTK_IMAGE (jun_image), current_pixbuf);
+
+      gtk_window_resize (GTK_WINDOW (main_window), new_width, new_height);
+    }
+  else
+    {
+      src_pixbuf = NULL;
+      current_pixbuf = NULL;
+
+      if (image_type == GTK_IMAGE_ANIMATION)
+        {
+          GdkPixbufAnimation *ani;
+          int new_width = gdk_pixbuf_animation_get_width (ani);
+          int new_height = gdk_pixbuf_animation_get_height (ani);
+
+          gtk_window_resize (GTK_WINDOW (main_window), new_width, new_height);
+        }
     }
 }
 
