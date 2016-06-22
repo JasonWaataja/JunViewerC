@@ -392,9 +392,18 @@ on_quit_item_activate ()
 static void
 on_about_activate ()
 {
+  gchar *authors = "Jason Waataja";
+
   gtk_show_about_dialog (NULL,
                          "program-name", "JunViewerC",
-                         "title" "About JunViewerC",
+                         "title", "About JunViewerC",
+                         "authors", &authors,
+                         "copyright", "Copyright (C) 2016 Jason Waataja",
+                         "comments", "JunViewerC is an application to view"
+                         " Jun from a set of random images but you can also"
+                         " use your own.",
+                         "version", "Version 0.10",
+                         "logo-icon-name", "image-x-generic",
                          NULL);
 }
 
