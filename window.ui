@@ -32,6 +32,20 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="set_to_original_size_item">
+                        <property name="label" translatable="yes">Set to original size</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="set_to_default_size_item">
+                        <property name="label" translatable="yes">Set to default size</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkSeparatorMenuItem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>

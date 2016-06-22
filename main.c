@@ -54,6 +54,12 @@ on_quit_item_activate ();
 static void
 on_about_activate ();
 
+static void
+set_image_to_src_size ();
+
+static void
+set_image_to_default_size ();
+
 /* Set jun_image's size to the window size from src_pixbuf.  */
 /*static void*/
 /*on_size_allocate (GtkWidget *widget,*/
@@ -123,6 +129,19 @@ main (int argc,
                     "activate",
                     G_CALLBACK(on_about_activate),
                     NULL);
+  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
+                                                      "set_to_original"
+                                                      "_size_item")),
+                    "activate",
+                    G_CALLBACK (set_image_to_src_size),
+                    NULL);
+  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
+                                                      "set_to_default"
+                                                      "_size_item")),
+                    "activate",
+                    G_CALLBACK (set_image_to_default_size),
+                    NULL);
+
   /*g_signal_connect (G_OBJECT (jun_image),*/
                     /*"size-allocate",*/
                     /*G_CALLBACK (on_size_allocate),*/
@@ -374,6 +393,45 @@ on_about_activate ()
                          "program-name", "JunViewerC",
                          "title" "About JunViewerC",
                          NULL);
+}
+
+static void
+set_image_to_src_size ()
+{
+  GtkImageType image_type = gtk_image_get_storage_type (GTK_IMAGE (jun_image));
+  if (image_type == GTK_IMAGE_PIXBUF && src_pixbuf != NULL)
+    {
+      current_pixbuf = gdk_pixbuf_copy (src_pixbuf);
+      gtk_image_set_from_pixbuf (GTK_IMAGE (jun_image), current_pixbuf);
+
+      int new_width = gdk_pixbuf_get_width (current_pixbuf);
+      int new_height = gdk_pixbuf_get_height (current_pixbuf);
+
+      gtk_window_resize (GTK_WINDOW (main_window), new_width, new_height);
+    }
+}
+
+static void
+set_image_to_default_size ()
+{
+  GtkImageType image_type;
+  image_type = gtk_image_get_storage_type (GTK_IMAGE (jun_image));
+  if (image_type == GTK_IMAGE_PIXBUF && src_pixbuf != NULL)
+    {
+      int src_width = gdk_pixbuf_get_width (src_pixbuf);
+      int src_height = gdk_pixbuf_get_height (src_pixbuf);
+
+      int new_width = DEFAULT_IMAGE_WIDTH;
+      int new_height = new_width * src_height / src_width;
+
+      current_pixbuf = gdk_pixbuf_scale_simple (src_pixbuf,
+                                                new_width,
+                                                new_height,
+                                                GDK_INTERP_HYPER);
+      gtk_image_set_from_pixbuf (GTK_IMAGE (jun_image), current_pixbuf);
+
+      gtk_window_resize (GTK_WINDOW (main_window), new_width, new_height);
+    }
 }
 
 /*static void*/
