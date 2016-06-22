@@ -54,6 +54,12 @@ on_quit_item_activate ();
 static void
 on_about_activate ();
 
+/* Set jun_image's size to the window size from src_pixbuf.  */
+/*static void*/
+/*on_size_allocate (GtkWidget *widget,*/
+                  /*GdkRectangle *allocation,*/
+                  /*gpointer userdata);*/
+
 GList *file_list;
 /*GFile *current_directory;*/
 
@@ -117,6 +123,10 @@ main (int argc,
                     "activate",
                     G_CALLBACK(on_about_activate),
                     NULL);
+  /*g_signal_connect (G_OBJECT (jun_image),*/
+                    /*"size-allocate",*/
+                    /*G_CALLBACK (on_size_allocate),*/
+                    /*NULL);*/
 
   gtk_builder_connect_signals (builder, NULL);
   g_object_unref (builder);
@@ -218,7 +228,8 @@ load_random_jun ()
 
   if (image_type == GTK_IMAGE_PIXBUF)
     {
-      src_pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (jun_image));
+      src_pixbuf = gdk_pixbuf_copy (gtk_image_get_pixbuf (GTK_IMAGE (jun_image
+                                                                     )));
       int src_width = gdk_pixbuf_get_width (src_pixbuf);
       int src_height = gdk_pixbuf_get_height (src_pixbuf);
 
@@ -240,6 +251,7 @@ load_random_jun ()
       if (image_type == GTK_IMAGE_ANIMATION)
         {
           GdkPixbufAnimation *ani;
+          ani = gtk_image_get_animation ( GTK_IMAGE (jun_image));
           int new_width = gdk_pixbuf_animation_get_width (ani);
           int new_height = gdk_pixbuf_animation_get_height (ani);
 
@@ -288,51 +300,65 @@ select_image_dir ()
 static void
 save_current_jun ()
 {
-  GtkWidget *dialog;
-  GtkFileChooser *chooser;
-  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
-  gint res;
-
-  dialog = gtk_file_chooser_dialog_new ("Save File",
-                                        GTK_WINDOW (main_window),
-                                        action,
-                                        "Cancel",
-                                        GTK_RESPONSE_CANCEL,
-                                        "Save",
-                                        GTK_RESPONSE_ACCEPT,
-                                        NULL);
-  chooser = GTK_FILE_CHOOSER (dialog);
-
-  gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
-  gtk_file_chooser_set_current_name (chooser,
-                                     "Untitled image");
-
-  res = gtk_dialog_run (GTK_DIALOG (dialog));
-  if (res == GTK_RESPONSE_ACCEPT)
+  GtkImageType image_type = gtk_image_get_storage_type (GTK_IMAGE (jun_image));
+  if (image_type != GTK_IMAGE_PIXBUF)
     {
-      char *filename;
-      filename = gtk_file_chooser_get_filename (chooser);
-      GdkPixbuf *buf = gtk_image_get_pixbuf (GTK_IMAGE (jun_image));
-
-      if (buf != NULL)
-        {
-          gdk_pixbuf_save(buf, filename, "png", NULL, NULL);
-        }
-      else
-        {
-          dialog = gtk_message_dialog_new (GTK_WINDOW (main_window),
-                                           GTK_DIALOG_MODAL,
-                                           GTK_MESSAGE_ERROR,
-                                           GTK_BUTTONS_CLOSE,
-                                           "Error saving image. It might be a "
-                                           "gif, which isn't supported yet.");
-          gtk_dialog_run (GTK_DIALOG (dialog));
-          gtk_widget_destroy (dialog);
-        }
-      g_free (filename);
+      GtkWidget *error_dialog;
+      error_dialog = gtk_message_dialog_new (GTK_WINDOW (main_window),
+                                       GTK_DIALOG_MODAL,
+                                       GTK_MESSAGE_ERROR,
+                                       GTK_BUTTONS_OK,
+                                       "Error saving image. It might be a "
+                                       "gif, which isn't supported yet.");
+      gtk_dialog_run (GTK_DIALOG (error_dialog));
+      gtk_widget_destroy (error_dialog);
     }
+  else
+    {
+      GtkWidget *dialog;
+      GtkFileChooser *chooser;
+      GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+      gint res;
 
-  gtk_widget_destroy (dialog);
+      dialog = gtk_file_chooser_dialog_new ("Save File",
+                                            GTK_WINDOW (main_window),
+                                            action,
+                                            "Cancel",
+                                            GTK_RESPONSE_CANCEL,
+                                            "Save",
+                                            GTK_RESPONSE_ACCEPT,
+                                            NULL);
+      chooser = GTK_FILE_CHOOSER (dialog);
+
+      gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+      gtk_file_chooser_set_current_name (chooser,
+                                         "Untitled image.png");
+
+      res = gtk_dialog_run (GTK_DIALOG (dialog));
+      if (res == GTK_RESPONSE_ACCEPT)
+        {
+          char *filename;
+          filename = gtk_file_chooser_get_filename (chooser);
+
+          if (src_pixbuf != NULL)
+            {
+              gdk_pixbuf_save(src_pixbuf, filename, "png", NULL, NULL);
+            }
+          else
+            {
+              dialog = gtk_message_dialog_new (GTK_WINDOW (main_window),
+                                               GTK_DIALOG_MODAL,
+                                               GTK_MESSAGE_ERROR,
+                                               GTK_BUTTONS_CLOSE,
+                                               "Error saving image.");
+              gtk_dialog_run (GTK_DIALOG (dialog));
+              gtk_widget_destroy (dialog);
+            }
+          g_free (filename);
+        }
+
+      gtk_widget_destroy (dialog);
+    }
 }
 
 static void
@@ -349,3 +375,23 @@ on_about_activate ()
                          "title" "About JunViewerC",
                          NULL);
 }
+
+/*static void*/
+/*on_size_allocate(GtkWidget *widget,*/
+                 /*GdkRectangle *allocation,*/
+                 /*gpointer user_data)*/
+/*{*/
+  /*GtkImageType image_type = gtk_image_get_storage_type (GTK_IMAGE (jun_image));*/
+
+  /*if (image_type == GTK_IMAGE_PIXBUF)*/
+    /*{*/
+      /*int new_width = allocation->width;*/
+      /*int new_height = allocation->height;*/
+      /*printf("allocated size %i\n", new_height);*/
+      /*current_pixbuf = gdk_pixbuf_scale_simple (src_pixbuf,*/
+                                                /*new_width,*/
+                                                /*new_height,*/
+                                                /*GDK_INTERP_BILINEAR);*/
+      /*gtk_image_set_from_pixbuf (GTK_IMAGE (jun_image), current_pixbuf);*/
+    /*}*/
+/*}*/
