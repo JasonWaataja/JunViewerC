@@ -2,6 +2,5 @@
 <gresources>
   <gresource prefix="/com/waataja/junviewer">
     <file preprocess="xml-stripblanks">window.ui</file>
-    <file preprocess="xml-stripblanks">app-menu.ui</file>
   </gresource>
 </gresources>

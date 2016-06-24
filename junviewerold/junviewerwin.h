@@ -13,8 +13,8 @@
      You should have received a copy of the GNU General Public License
      along with JunViewerC.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef JUNVIEWERWIN_H
-#define JUNVIEWERWIN_H
+#ifndef __JUNVIEWERWIN_H
+#define __JUNVIEWERWIN_H
 
 #include <gtk/gtk.h>
 #include "junviewerapp.h"
@@ -25,15 +25,37 @@
 typedef struct _JunViewerWindow JunViewerWindow;
 typedef struct _JunViewerWindowClass JunViewerWindowClass;
 
-GType jun_viewer_window_get_type(void);
-JunViewerWindow *jun_viewer_window_new(JunViewerApp *app);
-void jun_viewer_window_open(JunViewerWindow *win, GFile *file);
+GType
+jun_viewer_window_get_type (void);
 
-/* const char *jun_directory = "res"; */
+JunViewerWindow *
+jun_viewer_window_new (JunViewerApp *app);
 
-GList *get_reg_files_in_dir(const char *dir_path);
-GFile *get_random_jun_file();
-GList *get_jun_list();
-void jun_viewer_window_load_random_jun(JunViewerWindow* self);
+JunViewerWindow *
+jun_viewer_window_new_in_dir (JunViewerApp *app,
+                              const char *image_dir);
 
-#endif /* JUNVIEWERWIN_H */
+void
+jun_viewer_window_open (JunViewerWindow *win);
+
+void
+jun_viewer_window_load_image_from_file (JunViewerWindow *win, GFile *image_file);
+
+void
+jun_viewer_window_load_random_jun (JunViewerWindow *win);
+
+void
+jun_viewer_window_load_images_from_dir (JunViewerWindow *win, const char *image_dir);
+
+void
+jun_viewer_window_resize_to_image (JunViewerWindow *win);
+
+//void
+//jun_viewer_window_select_image_dir (JunViewerWindow *win);
+
+GList *
+get_reg_files_in_dir (const char *dir_path);
+
+
+
+#endif /* __JUNVIEWERWIN_H */

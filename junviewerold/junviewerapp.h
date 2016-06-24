@@ -13,18 +13,23 @@
      You should have received a copy of the GNU General Public License
      along with JunViewerC.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef JUNVIEWERAPP_H
-#define JUNVIEWERAPP_H
+#ifndef __JUNVIEWERAPP_H
+#define __JUNVIEWERAPP_H
 
 #include <gtk/gtk.h>
 
 #define JUN_VIEWER_APP_TYPE (jun_viewer_app_get_type ())
-#define JUN_VIEWER_APP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), JUN_VIEWER_APP_TYPE, JunViewerApp))
+#define JUN_VIEWER_APP(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), \
+                                                        JUN_VIEWER_APP_TYPE, \
+                                                        JunViewerApp))
 
 typedef struct _JunViewerApp JunViewerApp;
 typedef struct _JunViewerAppClass JunViewerAppClass;
 
-GType jun_viewer_app_get_type(void);
-JunViewerApp *jun_viewer_app_new(void);
+GType
+jun_viewer_app_get_type (void);
 
-#endif /* JUNVIEWERAPP_H */
+JunViewerApp *
+jun_viewer_app_new (void);
+
+#endif /* __JUNVIEWERAPP_H */
