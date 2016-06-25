@@ -102,7 +102,7 @@ jun_viewer_window_new (JunViewerApp *app)
 {
   JunViewerWindow *win = g_object_new (JUN_VIEWER_WINDOW_TYPE, "application",
                                        app, NULL);
-  jun_viewer_window_load_images_from_dir (win, "Jun");
+  jun_viewer_window_load_images_from_dir (win, "../Jun");
   jun_viewer_window_load_random_jun (win);
   return win;
 }
