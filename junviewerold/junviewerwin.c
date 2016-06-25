@@ -76,6 +76,39 @@ set_image_to_default_size_activated (GSimpleAction *action,
   jun_viewer_window_set_image_to_default_size (win);
 }
 
+static void
+open_activated (GSimpleAction *action,
+                GVariant *parameter,
+                gpointer win)
+{
+  jun_viewer_window_select_dir_dialog (JUN_VIEWER_WINDOW (win));
+}
+
+static void
+save_activated (GSimpleAction *action,
+                GVariant *parameter,
+                gpointer win)
+{
+  jun_viewer_window_save_current_dialog (JUN_VIEWER_WINDOW (win));
+}
+
+/*static void*/
+/*new_activated (GSimpleAction *action,*/
+               /*GVariant *parameter,*/
+               /*gpointer win)*/
+/*{*/
+  /*JunViewerApp *app = jun_viewer_app_new ();*/
+  /*g_application_run (G_APPLICATION (app), 0, NULL);*/
+/*}*/
+
+static void
+about_activated (GSimpleAction *action,
+                 GVariant *parameter,
+                 gpointer win)
+{
+  jun_viewer_window_about (win);
+}
+
 static GActionEntry win_entries[] =
 {
     {"quit", quit_activated, NULL, NULL, NULL},
@@ -83,7 +116,11 @@ static GActionEntry win_entries[] =
     {"set-image-to-src-size", set_image_to_src_size_activated,
       NULL, NULL, NULL},
     {"set-image-to-default-size", set_image_to_default_size_activated,
-      NULL, NULL, NULL}
+      NULL, NULL, NULL},
+    {"open", open_activated, NULL, NULL, NULL},
+    {"save", save_activated, NULL, NULL, NULL},
+    /*{"new", new_activated, NULL, NULL, NULL}*/
+    {"about", about_activated, NULL, NULL, NULL}
 };
 
 static void
@@ -100,6 +137,9 @@ jun_viewer_window_init (JunViewerWindow *win)
                                    win);
 
   g_signal_connect_swapped (priv->jun_image_box, "button-press-event",
+                            G_CALLBACK (jun_viewer_window_load_random_jun),
+                            win);
+  g_signal_connect_swapped (priv->next_jun_button, "clicked",
                             G_CALLBACK (jun_viewer_window_load_random_jun),
                             win);
 }
@@ -213,7 +253,24 @@ jun_viewer_window_load_image_from_file (JunViewerWindow *win,
 
   if (image_type == GTK_IMAGE_PIXBUF)
     {
-      priv->src_pixbuf = gdk_pixbuf_copy (gtk_image_get_pixbuf (jun_image));
+      GdkPixbuf *src_pixbuf;
+      GdkPixbuf *image_pixbuf;
+      image_pixbuf = gtk_image_get_pixbuf (jun_image);
+      src_pixbuf = gdk_pixbuf_copy (image_pixbuf);
+
+      priv->src_pixbuf = src_pixbuf;
+
+      int src_width = gdk_pixbuf_get_width (src_pixbuf);
+      int src_height = gdk_pixbuf_get_height (src_pixbuf);
+
+      int new_width = DEFAULT_IMAGE_WIDTH;
+      int new_height = new_width * src_height / src_width;
+
+      GdkPixbuf *new_pixbuf = gdk_pixbuf_scale_simple (src_pixbuf,
+                                                       new_width,
+                                                       new_height,
+                                                       GDK_INTERP_HYPER);
+      gtk_image_set_from_pixbuf (jun_image, new_pixbuf);
     }
 
   jun_viewer_window_resize_to_image (win);
@@ -241,7 +298,7 @@ jun_viewer_window_load_images_from_dir (JunViewerWindow *win,
 {
   JunViewerWindowPrivate *priv = jun_viewer_window_get_instance_private (win);
   priv->image_files = get_reg_files_in_dir (image_dir);
-  jun_viewer_window_load_random_jun (win);
+  /*jun_viewer_window_load_random_jun (win);*/
 }
 
 void
@@ -283,6 +340,7 @@ jun_viewer_window_set_image_to_src_size (JunViewerWindow *win)
       gtk_image_set_from_pixbuf (GTK_IMAGE (priv->jun_image),
                                  priv->src_pixbuf);
     }
+  jun_viewer_window_resize_to_image (win);
 }
 
 void
@@ -307,4 +365,129 @@ jun_viewer_window_set_image_to_default_size (JunViewerWindow *win)
                                             GDK_INTERP_HYPER);
       gtk_image_set_from_pixbuf (GTK_IMAGE (priv->jun_image), new_pixbuf);
     }
+  jun_viewer_window_resize_to_image (win);
+}
+
+void
+jun_viewer_window_select_dir_dialog (JunViewerWindow *win)
+{
+  GtkWidget *dialog;
+  GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+  int result;
+
+  dialog = gtk_file_chooser_dialog_new ("Open Directory",
+                                        GTK_WINDOW (win),
+                                        action,
+                                        "Cancel",
+                                        GTK_RESPONSE_CANCEL,
+                                        "Open",
+                                        GTK_RESPONSE_ACCEPT,
+                                        NULL);
+
+  result = gtk_dialog_run (GTK_DIALOG (dialog));
+
+  if (result == GTK_RESPONSE_ACCEPT)
+    {
+      char *filename;
+      GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+      filename = gtk_file_chooser_get_filename (chooser);
+      jun_viewer_window_load_images_from_dir (win, filename);
+      jun_viewer_window_load_random_jun (win);
+      filename = gtk_file_chooser_get_filename (chooser);
+      g_free (filename);
+    }
+
+  gtk_widget_destroy (dialog);
+
+  jun_viewer_window_load_random_jun (win);
+}
+
+void
+jun_viewer_window_save_current_dialog (JunViewerWindow *win)
+{
+  JunViewerWindowPrivate *priv = jun_viewer_window_get_instance_private (win);
+
+  GtkImageType image_type = gtk_image_get_storage_type (GTK_IMAGE (priv->jun_image));
+  
+  if (image_type != GTK_IMAGE_PIXBUF)
+    {
+      GtkWidget *error_dialog;
+      /* I forget if this will be destroyed or not.  */
+      char *error_message = "Can't save image. It's not in an image format"
+        "and might be an animation.";
+      error_dialog = gtk_message_dialog_new (GTK_WINDOW (win),
+                                             GTK_DIALOG_MODAL,
+                                             GTK_MESSAGE_ERROR,
+                                             GTK_BUTTONS_OK,
+                                             "%s",
+                                             error_message);
+      gtk_dialog_run (GTK_DIALOG (error_dialog));
+      gtk_widget_destroy (error_dialog);
+    }
+  else
+    {
+      GtkWidget *dialog;
+      GtkFileChooser *chooser;
+      GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SAVE;
+      int result;
+
+      dialog = gtk_file_chooser_dialog_new ("Save Image",
+                                            GTK_WINDOW (win),
+                                            action,
+                                            "Cance",
+                                            GTK_RESPONSE_CANCEL,
+                                            "Save",
+                                            GTK_RESPONSE_ACCEPT,
+                                            NULL);
+      chooser = GTK_FILE_CHOOSER (dialog);
+
+      gtk_file_chooser_set_do_overwrite_confirmation (chooser, TRUE);
+      gtk_file_chooser_set_current_name (chooser,
+                                         "Untitled Image.png");
+
+      result = gtk_dialog_run (GTK_DIALOG (dialog));
+
+      if (result == GTK_RESPONSE_ACCEPT)
+        {
+          char *filename;
+          filename = gtk_file_chooser_get_filename (chooser);
+
+          if (priv->src_pixbuf != NULL)
+            {
+              gdk_pixbuf_save (priv->src_pixbuf, filename, "png", NULL, NULL);
+            }
+          else
+            {
+              dialog = gtk_message_dialog_new (GTK_WINDOW (win),
+                                               GTK_DIALOG_MODAL,
+                                               GTK_MESSAGE_ERROR,
+                                               GTK_BUTTONS_OK,
+                                               "Error, couldn't get the image data.");
+              gtk_dialog_run (GTK_DIALOG (dialog));
+              gtk_widget_destroy (dialog);
+            }
+          g_free (filename);
+        }
+      gtk_widget_destroy (dialog);
+    }
+}
+
+void
+jun_viewer_window_about (JunViewerWindow *win)
+{
+  /* This is weird. It worked before but now using the authors thing gives a
+     segmentation fault I think.  */
+  /*char *authors = "Jason Waataja";*/
+
+  gtk_show_about_dialog (GTK_WINDOW (win),
+                         "program-name", "JunViewerC",
+                         "title", "About JunViewerC",
+                         /*"authors", &authors,*/
+                         "copyright", "Copyright (C) 2016 Jason Waataja",
+                         "comments", "JunViewerC is an application to view"
+                         " Jun from a set of random images but you can also"
+                         " use your own.",
+                         "version", "Version 0.10",
+                         "logo-icon-name", "image-x-generic",
+                         NULL);
 }

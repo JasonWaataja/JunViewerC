@@ -37,7 +37,7 @@
                         <property name="label" translatable="yes">Set to original size</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="action-name">set-image-to-src-size</property>
+                        <property name="action-name">win.set-image-to-src-size</property>
                       </object>
                     </child>
                     <child>
@@ -45,7 +45,7 @@
                         <property name="label" translatable="yes">Set to default size</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="action-name">set-image-to-default-size</property>
+                        <property name="action-name">win.set-image-to-default-size</property>
                       </object>
                     </child>
                     <child>
@@ -61,6 +61,7 @@
                         <!--<property name="can_focus">False</property>-->
                         <!--<property name="use_underline">True</property>-->
                         <!--<property name="use_stock">True</property>-->
+                        <!--<property name="action-name">win.new</property>-->
                       <!--</object>-->
                     <!--</child>-->
                     <child>
@@ -70,6 +71,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <property name="action-name">win.open</property>
                       </object>
                     </child>
                     <child>
@@ -79,6 +81,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <property name="action-name">win.save</property>
                       </object>
                     </child>
                     <child>
@@ -118,6 +121,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <property name="action-name">win.about</property>
                       </object>
                     </child>
                   </object>

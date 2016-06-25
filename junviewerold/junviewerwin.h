@@ -64,4 +64,12 @@ jun_viewer_window_set_image_to_src_size (JunViewerWindow *win);
 void
 jun_viewer_window_set_image_to_default_size (JunViewerWindow *win);
 
+void
+jun_viewer_window_select_dir_dialog (JunViewerWindow *win);
+
+void
+jun_viewer_window_save_current_dialog (JunViewerWindow *win);
+
+void jun_viewer_window_about (JunViewerWindow *win);
+
 #endif /* __JUNVIEWERWIN_H */
