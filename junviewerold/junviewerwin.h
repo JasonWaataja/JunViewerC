@@ -25,6 +25,8 @@
 typedef struct _JunViewerWindow JunViewerWindow;
 typedef struct _JunViewerWindowClass JunViewerWindowClass;
 
+#define DEFAULT_IMAGE_WIDTH 540
+
 GType
 jun_viewer_window_get_type (void);
 
@@ -56,6 +58,10 @@ jun_viewer_window_resize_to_image (JunViewerWindow *win);
 GList *
 get_reg_files_in_dir (const char *dir_path);
 
+void
+jun_viewer_window_set_image_to_src_size (JunViewerWindow *win);
 
+void
+jun_viewer_window_set_image_to_default_size (JunViewerWindow *win);
 
 #endif /* __JUNVIEWERWIN_H */

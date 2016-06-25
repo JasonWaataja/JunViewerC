@@ -21,16 +21,16 @@ along with JunViewerC.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <stdlib.h>
 
 #include "junviewerapp.h"
+#include "junviewerwin.h"
 
-#define DEFAULT_IMAGE_WIDTH 540
 
 /*const char *file_dir = "Jun";*/
 
 static GFile *
 get_random_jun ();
 
-static GList *
-get_reg_files_in_dir (const char *file_dir);
+/*static GList **/
+/*get_reg_files_in_dir (const char *file_dir);*/
 
 static void
 on_main_window_destroy ();
@@ -177,54 +177,54 @@ get_random_jun ()
   return jun_file;
 }
 
-static GList *
-get_reg_files_in_dir (const char *dir_path)
-{
-  GList *file_list = NULL;
+/*static GList **/
+/*get_reg_files_in_dir (const char *dir_path)*/
+/*{*/
+  /*GList *file_list = NULL;*/
 
-  if (dir_path == NULL)
-    return NULL;
+  /*if (dir_path == NULL)*/
+    /*return NULL;*/
 
-  GFile *file_dir = g_file_new_for_path (dir_path);
-  GFileType file_type;
-  file_type = g_file_query_file_type (file_dir, G_FILE_QUERY_INFO_NONE, NULL);
-  if (file_type == G_FILE_TYPE_DIRECTORY)
-    {
-      GFileEnumerator *en;
-      en = g_file_enumerate_children (file_dir,
-                                     "*",
-                                     G_FILE_QUERY_INFO_NONE,
-                                     NULL,
-                                     NULL);
-      GFileInfo *file_info;
-      GFile *temp_file;
-      int result;
-      result = g_file_enumerator_iterate (en,
-                                         &file_info,
-                                         &temp_file,
-                                         NULL,
-                                         NULL);
-      while (result && file_info)
-        {
-          file_type = g_file_query_file_type (temp_file,
-                                             G_FILE_QUERY_INFO_NONE,
-                                             NULL);
-          if (file_type == G_FILE_TYPE_REGULAR)
-            {
-              const char *file_path = g_file_get_path (temp_file);
-              GFile *reg_file = g_file_new_for_path (file_path);
-              file_list = g_list_append (file_list, reg_file);
-            }
-          result = g_file_enumerator_iterate (en,
-                                             &file_info,
-                                             &temp_file,
-                                             NULL,
-                                             NULL);
-        }
-    }
+  /*GFile *file_dir = g_file_new_for_path (dir_path);*/
+  /*GFileType file_type;*/
+  /*file_type = g_file_query_file_type (file_dir, G_FILE_QUERY_INFO_NONE, NULL);*/
+  /*if (file_type == G_FILE_TYPE_DIRECTORY)*/
+    /*{*/
+      /*GFileEnumerator *en;*/
+      /*en = g_file_enumerate_children (file_dir,*/
+                                     /*"*",*/
+                                     /*G_FILE_QUERY_INFO_NONE,*/
+                                     /*NULL,*/
+                                     /*NULL);*/
+      /*GFileInfo *file_info;*/
+      /*GFile *temp_file;*/
+      /*int result;*/
+      /*result = g_file_enumerator_iterate (en,*/
+                                         /*&file_info,*/
+                                         /*&temp_file,*/
+                                         /*NULL,*/
+                                         /*NULL);*/
+      /*while (result && file_info)*/
+        /*{*/
+          /*file_type = g_file_query_file_type (temp_file,*/
+                                             /*G_FILE_QUERY_INFO_NONE,*/
+                                             /*NULL);*/
+          /*if (file_type == G_FILE_TYPE_REGULAR)*/
+            /*{*/
+              /*const char *file_path = g_file_get_path (temp_file);*/
+              /*GFile *reg_file = g_file_new_for_path (file_path);*/
+              /*file_list = g_list_append (file_list, reg_file);*/
+            /*}*/
+          /*result = g_file_enumerator_iterate (en,*/
+                                             /*&file_info,*/
+                                             /*&temp_file,*/
+                                             /*NULL,*/
+                                             /*NULL);*/
+        /*}*/
+    /*}*/
 
-  return file_list;
-}
+  /*return file_list;*/
+/*}*/
 
 static void
 on_main_window_destroy ()

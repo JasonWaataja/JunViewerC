@@ -60,10 +60,30 @@ next_jun_activated (GSimpleAction *action,
   jun_viewer_window_load_random_jun (win);
 }
 
+static void
+set_image_to_src_size_activated (GSimpleAction *action,
+                                 GVariant *parameter,
+                                 gpointer win)
+{
+  jun_viewer_window_set_image_to_src_size (win);
+}
+
+static void
+set_image_to_default_size_activated (GSimpleAction *action,
+                                 GVariant *parameter,
+                                 gpointer win)
+{
+  jun_viewer_window_set_image_to_default_size (win);
+}
+
 static GActionEntry win_entries[] =
 {
     {"quit", quit_activated, NULL, NULL, NULL},
-    {"next-jun", next_jun_activated, NULL, NULL, NULL}
+    {"next-jun", next_jun_activated, NULL, NULL, NULL},
+    {"set-image-to-src-size", set_image_to_src_size_activated,
+      NULL, NULL, NULL},
+    {"set-image-to-default-size", set_image_to_default_size_activated,
+      NULL, NULL, NULL}
 };
 
 static void
@@ -78,6 +98,10 @@ jun_viewer_window_init (JunViewerWindow *win)
                                    win_entries,
                                    G_N_ELEMENTS (win_entries),
                                    win);
+
+  g_signal_connect_swapped (priv->jun_image_box, "button-press-event",
+                            G_CALLBACK (jun_viewer_window_load_random_jun),
+                            win);
 }
 
 static void
@@ -244,5 +268,43 @@ jun_viewer_window_resize_to_image (JunViewerWindow *win)
       int height = gdk_pixbuf_animation_get_height (ani);
 
       gtk_window_resize (GTK_WINDOW (win), width, height);
+    }
+}
+
+void
+jun_viewer_window_set_image_to_src_size (JunViewerWindow *win)
+{
+  JunViewerWindowPrivate *priv = jun_viewer_window_get_instance_private (win);
+
+  GtkImageType image_type;
+  image_type = gtk_image_get_storage_type (GTK_IMAGE (priv->jun_image));
+  if (image_type == GTK_IMAGE_PIXBUF && priv->src_pixbuf != NULL)
+    {
+      gtk_image_set_from_pixbuf (GTK_IMAGE (priv->jun_image),
+                                 priv->src_pixbuf);
+    }
+}
+
+void
+jun_viewer_window_set_image_to_default_size (JunViewerWindow *win)
+{
+  JunViewerWindowPrivate *priv = jun_viewer_window_get_instance_private (win);
+
+  GtkImageType image_type;
+  image_type = gtk_image_get_storage_type (GTK_IMAGE (priv->jun_image));
+  if (image_type == GTK_IMAGE_PIXBUF && priv->src_pixbuf != NULL)
+    {
+      int src_width = gdk_pixbuf_get_width (priv->src_pixbuf);
+      int src_height = gdk_pixbuf_get_height (priv->src_pixbuf);
+
+      int new_width = DEFAULT_IMAGE_WIDTH;
+      int new_height = new_width * src_height / src_width;
+
+      GdkPixbuf *new_pixbuf;
+      new_pixbuf = gdk_pixbuf_scale_simple (priv->src_pixbuf,
+                                            new_width,
+                                            new_height,
+                                            GDK_INTERP_HYPER);
+      gtk_image_set_from_pixbuf (GTK_IMAGE (priv->jun_image), new_pixbuf);
     }
 }

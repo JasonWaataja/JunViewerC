@@ -38,3 +38,6 @@ jvc
 *~
 *.swp
 *.swo
+
+#for the generated resources.c
+resources.c
