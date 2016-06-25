@@ -20,15 +20,17 @@ along with JunViewerC.  If not, see <http://www.gnu.org/licenses/>.  */
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DEFAULT_IMAGE_WIDTH 540
+#include "junviewerapp.h"
+#include "junviewerwin.h"
+
 
 /*const char *file_dir = "Jun";*/
 
 static GFile *
 get_random_jun ();
 
-static GList *
-get_reg_files_in_dir (const char *file_dir);
+/*static GList **/
+/*get_reg_files_in_dir (const char *file_dir);*/
 
 static void
 on_main_window_destroy ();
@@ -86,80 +88,82 @@ int
 main (int argc,
      char *argv[])
 {
-  gtk_init (&argc, &argv);
+  /*gtk_init (&argc, &argv);*/
 
-  srand(time(NULL));
+  /*srand(time(NULL));*/
 
-  GtkBuilder *builder;
-  builder = gtk_builder_new_from_file ("window.ui");
+  /*GtkBuilder *builder;*/
+  /*builder = gtk_builder_new_from_file ("window.ui");*/
 
-  main_window = GTK_WIDGET (gtk_builder_get_object (builder, "main_window"));
-  jun_image = GTK_WIDGET (gtk_builder_get_object (builder, "jun_image"));
-  next_jun_button = GTK_WIDGET (gtk_builder_get_object (builder,
-                                                        "next_jun_button"));
-  jun_image_box = GTK_WIDGET (gtk_builder_get_object (builder,
-                                                      "jun_image_box"));
+  /*main_window = GTK_WIDGET (gtk_builder_get_object (builder, "main_window"));*/
+  /*jun_image = GTK_WIDGET (gtk_builder_get_object (builder, "jun_image"));*/
+  /*next_jun_button = GTK_WIDGET (gtk_builder_get_object (builder,*/
+                                                        /*"next_jun_button"));*/
+  /*jun_image_box = GTK_WIDGET (gtk_builder_get_object (builder,*/
+                                                      /*"jun_image_box"));*/
   
 
-  g_signal_connect (G_OBJECT (main_window), "destroy",
-                    G_CALLBACK (on_main_window_destroy), NULL);
-  g_signal_connect (G_OBJECT (jun_image_box), "button-press-event",
-                    G_CALLBACK (on_jun_image_box_button_press_event), NULL);
-  g_signal_connect (G_OBJECT (next_jun_button), "clicked",
-                    G_CALLBACK (on_next_jun_button_clicked), NULL);
-  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
-                                                      "next_jun_item")),
-                    "activate",
-                    G_CALLBACK(load_random_jun),
-                    NULL);
-  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
-                                                      "open_item")),
-                    "activate",
-                    G_CALLBACK(select_image_dir),
-                    NULL);
-  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
-                                                      "save_item")),
-                    "activate",
-                    G_CALLBACK(save_current_jun),
-                    NULL);
-  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
-                                                      "quit_item")),
-                    "activate",
-                    G_CALLBACK(on_quit_item_activate),
-                    NULL);
-  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
-                                                      "about_item")),
-                    "activate",
-                    G_CALLBACK(on_about_activate),
-                    NULL);
-  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
-                                                      "set_to_original"
-                                                      "_size_item")),
-                    "activate",
-                    G_CALLBACK (set_image_to_src_size),
-                    NULL);
-  g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,
-                                                      "set_to_default"
-                                                      "_size_item")),
-                    "activate",
-                    G_CALLBACK (set_image_to_default_size),
-                    NULL);
-
-  /*g_signal_connect (G_OBJECT (jun_image),*/
-                    /*"size-allocate",*/
-                    /*G_CALLBACK (on_size_allocate),*/
+  /*g_signal_connect (G_OBJECT (main_window), "destroy",*/
+                    /*G_CALLBACK (on_main_window_destroy), NULL);*/
+  /*g_signal_connect (G_OBJECT (jun_image_box), "button-press-event",*/
+                    /*G_CALLBACK (on_jun_image_box_button_press_event), NULL);*/
+  /*g_signal_connect (G_OBJECT (next_jun_button), "clicked",*/
+                    /*G_CALLBACK (on_next_jun_button_clicked), NULL);*/
+  /*g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,*/
+                                                      /*"next_jun_item")),*/
+                    /*"activate",*/
+                    /*G_CALLBACK(load_random_jun),*/
+                    /*NULL);*/
+  /*g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,*/
+                                                      /*"open_item")),*/
+                    /*"activate",*/
+                    /*G_CALLBACK(select_image_dir),*/
+                    /*NULL);*/
+  /*g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,*/
+                                                      /*"save_item")),*/
+                    /*"activate",*/
+                    /*G_CALLBACK(save_current_jun),*/
+                    /*NULL);*/
+  /*g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,*/
+                                                      /*"quit_item")),*/
+                    /*"activate",*/
+                    /*G_CALLBACK(on_quit_item_activate),*/
+                    /*NULL);*/
+  /*g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,*/
+                                                      /*"about_item")),*/
+                    /*"activate",*/
+                    /*G_CALLBACK(on_about_activate),*/
+                    /*NULL);*/
+  /*g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,*/
+                                                      /*"set_to_original"*/
+                                                      /*"_size_item")),*/
+                    /*"activate",*/
+                    /*G_CALLBACK (set_image_to_src_size),*/
+                    /*NULL);*/
+  /*g_signal_connect (G_OBJECT (gtk_builder_get_object (builder,*/
+                                                      /*"set_to_default"*/
+                                                      /*"_size_item")),*/
+                    /*"activate",*/
+                    /*G_CALLBACK (set_image_to_default_size),*/
                     /*NULL);*/
 
-  gtk_builder_connect_signals (builder, NULL);
-  g_object_unref (builder);
+  /*[>g_signal_connect (G_OBJECT (jun_image),<]*/
+                    /*[>"size-allocate",<]*/
+                    /*[>G_CALLBACK (on_size_allocate),<]*/
+                    /*[>NULL);<]*/
 
-  load_images_from_directory("Jun");
-  gtk_widget_show (main_window);
-  load_random_jun();
+  /*gtk_builder_connect_signals (builder, NULL);*/
+  /*g_object_unref (builder);*/
 
-  gtk_main ();
+  /*load_images_from_directory("Jun");*/
+  /*gtk_widget_show (main_window);*/
+  /*load_random_jun();*/
 
-  return EXIT_SUCCESS;
+  /*gtk_main ();*/
+
+  srand (time (NULL));
+  JunViewerApp *app = jun_viewer_app_new ();
+  return g_application_run (G_APPLICATION (app), argc, argv);
 }
 
 
@@ -173,54 +177,54 @@ get_random_jun ()
   return jun_file;
 }
 
-static GList *
-get_reg_files_in_dir (const char *dir_path)
-{
-  GList *file_list = NULL;
+/*static GList **/
+/*get_reg_files_in_dir (const char *dir_path)*/
+/*{*/
+  /*GList *file_list = NULL;*/
 
-  if (dir_path == NULL)
-    return NULL;
+  /*if (dir_path == NULL)*/
+    /*return NULL;*/
 
-  GFile *file_dir = g_file_new_for_path (dir_path);
-  GFileType file_type;
-  file_type = g_file_query_file_type (file_dir, G_FILE_QUERY_INFO_NONE, NULL);
-  if (file_type == G_FILE_TYPE_DIRECTORY)
-    {
-      GFileEnumerator *en;
-      en = g_file_enumerate_children (file_dir,
-                                     "*",
-                                     G_FILE_QUERY_INFO_NONE,
-                                     NULL,
-                                     NULL);
-      GFileInfo *file_info;
-      GFile *temp_file;
-      int result;
-      result = g_file_enumerator_iterate (en,
-                                         &file_info,
-                                         &temp_file,
-                                         NULL,
-                                         NULL);
-      while (result && file_info)
-        {
-          file_type = g_file_query_file_type (temp_file,
-                                             G_FILE_QUERY_INFO_NONE,
-                                             NULL);
-          if (file_type == G_FILE_TYPE_REGULAR)
-            {
-              const char *file_path = g_file_get_path (temp_file);
-              GFile *reg_file = g_file_new_for_path (file_path);
-              file_list = g_list_append (file_list, reg_file);
-            }
-          result = g_file_enumerator_iterate (en,
-                                             &file_info,
-                                             &temp_file,
-                                             NULL,
-                                             NULL);
-        }
-    }
+  /*GFile *file_dir = g_file_new_for_path (dir_path);*/
+  /*GFileType file_type;*/
+  /*file_type = g_file_query_file_type (file_dir, G_FILE_QUERY_INFO_NONE, NULL);*/
+  /*if (file_type == G_FILE_TYPE_DIRECTORY)*/
+    /*{*/
+      /*GFileEnumerator *en;*/
+      /*en = g_file_enumerate_children (file_dir,*/
+                                     /*"*",*/
+                                     /*G_FILE_QUERY_INFO_NONE,*/
+                                     /*NULL,*/
+                                     /*NULL);*/
+      /*GFileInfo *file_info;*/
+      /*GFile *temp_file;*/
+      /*int result;*/
+      /*result = g_file_enumerator_iterate (en,*/
+                                         /*&file_info,*/
+                                         /*&temp_file,*/
+                                         /*NULL,*/
+                                         /*NULL);*/
+      /*while (result && file_info)*/
+        /*{*/
+          /*file_type = g_file_query_file_type (temp_file,*/
+                                             /*G_FILE_QUERY_INFO_NONE,*/
+                                             /*NULL);*/
+          /*if (file_type == G_FILE_TYPE_REGULAR)*/
+            /*{*/
+              /*const char *file_path = g_file_get_path (temp_file);*/
+              /*GFile *reg_file = g_file_new_for_path (file_path);*/
+              /*file_list = g_list_append (file_list, reg_file);*/
+            /*}*/
+          /*result = g_file_enumerator_iterate (en,*/
+                                             /*&file_info,*/
+                                             /*&temp_file,*/
+                                             /*NULL,*/
+                                             /*NULL);*/
+        /*}*/
+    /*}*/
 
-  return file_list;
-}
+  /*return file_list;*/
+/*}*/
 
 static void
 on_main_window_destroy ()

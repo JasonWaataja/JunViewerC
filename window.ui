@@ -2,7 +2,7 @@
 <!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkApplicationWindow" id="main_window">
+  <template class="JunViewerWindow" parent="GtkApplicationWindow">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Jun Viewer</property>
     <child>
@@ -29,6 +29,7 @@
                         <property name="label" translatable="yes">Next Jun</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="action-name">win.next-jun</property>
                       </object>
                     </child>
                     <child>
@@ -36,6 +37,7 @@
                         <property name="label" translatable="yes">Set to original size</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="action-name">win.set-image-to-src-size</property>
                       </object>
                     </child>
                     <child>
@@ -43,6 +45,7 @@
                         <property name="label" translatable="yes">Set to default size</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="action-name">win.set-image-to-default-size</property>
                       </object>
                     </child>
                     <child>
@@ -58,6 +61,7 @@
                         <!--<property name="can_focus">False</property>-->
                         <!--<property name="use_underline">True</property>-->
                         <!--<property name="use_stock">True</property>-->
+                        <!--<property name="action-name">win.new</property>-->
                       <!--</object>-->
                     <!--</child>-->
                     <child>
@@ -67,6 +71,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <property name="action-name">win.open</property>
                       </object>
                     </child>
                     <child>
@@ -76,6 +81,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <property name="action-name">win.save</property>
                       </object>
                     </child>
                     <child>
@@ -91,6 +97,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <property name="action-name">win.quit</property>
                       </object>
                     </child>
                   </object>
@@ -114,6 +121,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <property name="action-name">win.about</property>
                       </object>
                     </child>
                   </object>
@@ -160,5 +168,5 @@
         </child>
       </object>
     </child>
-  </object>
+  </template>
 </interface>
