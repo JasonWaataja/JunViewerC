@@ -414,7 +414,7 @@ jun_viewer_window_save_current_dialog (JunViewerWindow *win)
       GtkWidget *error_dialog;
       /* I forget if this will be destroyed or not.  */
       char *error_message = "Can't save image. It's not in an image format"
-        "and might be an animation.";
+        " and might be an animation.";
       error_dialog = gtk_message_dialog_new (GTK_WINDOW (win),
                                              GTK_DIALOG_MODAL,
                                              GTK_MESSAGE_ERROR,
