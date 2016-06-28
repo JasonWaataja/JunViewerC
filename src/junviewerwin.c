@@ -149,7 +149,7 @@ jun_viewer_window_class_init (JunViewerWindowClass *class)
 {
   gtk_widget_class_set_template_from_resource (GTK_WIDGET_CLASS (class),
                                                "/com/waataja/junviewer/"
-                                               "window.ui");
+                                               "ui/window.ui");
   gtk_widget_class_bind_template_child_private (GTK_WIDGET_CLASS (class),
                                                 JunViewerWindow,
                                                 jun_image);

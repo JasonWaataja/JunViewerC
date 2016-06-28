@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 project(JunViewerC)
 
-set(SOURCES main.c junviewerapp.c junviewerwin.c)
+set(SOURCES src/main.c src/junviewerapp.c src/junviewerwin.c)
 
 find_package(PkgConfig REQUIRED)
 
@@ -15,15 +15,15 @@ execute_process(
   #OUTPUT resources.c
   #COMMAND ${GLIB_COMPILE_RESOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/exampleapp.gresource.xml --target=resources.c --sourcedir=${CMAKE_CURRENT_SOURCE_DIR} --generate-source
   #)
-add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/resources.c
-  COMMAND ${GLIB_COMPILE_RESOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/junviewer.gresource.xml --target=${CMAKE_CURRENT_SOURCE_DIR}/resources.c --sourcedir=${CMAKE_CURRENT_SOURCE_DIR} --generate-source
+  add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/src/resources.c
+	COMMAND ${GLIB_COMPILE_RESOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/res/ui/junviewer.gresource.xml --target=${CMAKE_CURRENT_SOURCE_DIR}/src/resources.c --sourcedir=${CMAKE_CURRENT_SOURCE_DIR}/res --generate-source
   )
 
 
 #message(${GLIB_COMPILE_RESOURCES} exampleapp.gresource.xml --target=resources.c --sourcedir=${CMAKE_CURRENT_SOURCE_DIR} --generate-source)
 
 #add_executable(exampleapp ${SOURCES} resources.c)
-add_executable(jvc ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/resources.c)
+add_executable(jvc ${SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/src/resources.c)
 #add_executable(jvc ${SOURCES} resources.c)
 
 #add_custom_command(TARGET jvc
