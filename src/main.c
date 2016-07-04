@@ -33,6 +33,7 @@ main (int argc,
 
   cmrf_init (0);
   cmrf_add_path_relative ("res");
+  cmrf_add_path_cmake_prefix ("share/jvc");
 
   JunViewerApp *app = jun_viewer_app_new ();
   int result = g_application_run (G_APPLICATION (app), argc, argv);

@@ -56,3 +56,10 @@ add_custom_command(TARGET jvc
 add_subdirectory (CMakeResFinder)
 include_directories (CMakeResFinder/src)
 target_link_libraries (jvc cmrf)
+
+install (TARGETS jvc #EXPORT jvc
+	RUNTIME DESTINATION bin
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib/static)
+
+install (DIRECTORY res/ui res/Jun DESTINATION share/jvc)
