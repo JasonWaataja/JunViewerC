@@ -52,3 +52,7 @@ add_custom_command(TARGET jvc
   COMMAND ${CMAKE_COMMAND} -E copy_directory
   ${CMAKE_CURRENT_SOURCE_DIR}/Jun
   $<TARGET_FILE_DIR:jvc>/Jun)
+
+add_subdirectory (CMakeResFinder)
+include_directories (CMakeResFinder/src)
+target_link_libraries (jvc cmrf)

@@ -17,6 +17,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "cmrf.h"
+
 struct _JunViewerWindow
 {
   GtkApplicationWindow parent;
@@ -166,7 +168,9 @@ jun_viewer_window_new (JunViewerApp *app)
 {
   JunViewerWindow *win = g_object_new (JUN_VIEWER_WINDOW_TYPE, "application",
                                        app, NULL);
-  jun_viewer_window_load_images_from_dir (win, "Jun");
+  char *jun_path = cmrf_find_resource ("Jun");
+  jun_viewer_window_load_images_from_dir (win, jun_path);
+  free (jun_path);
   jun_viewer_window_load_random_jun (win);
   return win;
 }

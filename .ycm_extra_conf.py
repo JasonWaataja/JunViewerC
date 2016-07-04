@@ -49,6 +49,7 @@ flags = [
 '-x',
 'c',
 '-I./include',
+'-I./CMakeResFinder/src',
 '-I/usr/include/gtk-3.0',
 '-I/usr/include/at-spi2-atk/2.0',
 '-I/usr/include/at-spi-2.0',

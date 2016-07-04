@@ -22,6 +22,7 @@ along with JunViewerC.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "junviewerapp.h"
 #include "junviewerwin.h"
+#include "cmrf.h"
 
 
 int
@@ -29,6 +30,13 @@ main (int argc,
      char *argv[])
 {
   srand (time (NULL));
+
+  cmrf_init (0);
+  cmrf_add_path_relative ("res");
+
   JunViewerApp *app = jun_viewer_app_new ();
-  return g_application_run (G_APPLICATION (app), argc, argv);
+  int result = g_application_run (G_APPLICATION (app), argc, argv);
+
+  cmrf_exit ();
+  return result;
 }
