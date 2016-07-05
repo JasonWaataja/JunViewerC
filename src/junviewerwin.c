@@ -403,7 +403,7 @@ jun_viewer_window_select_dir_dialog (JunViewerWindow *win)
 
   gtk_widget_destroy (dialog);
 
-  jun_viewer_window_load_random_jun (win);
+  /*jun_viewer_window_load_random_jun (win);*/
 }
 
 void
