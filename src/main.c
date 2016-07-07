@@ -27,7 +27,7 @@ along with JunViewerC.  If not, see <http://www.gnu.org/licenses/>.  */
 
 int
 main (int argc,
-     char *argv[])
+      char *argv[])
 {
   srand (time (NULL));
 
