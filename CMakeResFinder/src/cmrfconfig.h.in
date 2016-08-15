@@ -1,6 +1,0 @@
-#ifndef CMRFCONFIG_H
-#define CMRFCONFIG_H
-
-const char CMAKE_INSTALL_PREFIX[] = "@CMAKE_INSTALL_PREFIX@";
-
-#endif /* CMRF_CONFIG_H */

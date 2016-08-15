@@ -22,8 +22,6 @@ along with JunViewerC.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "junviewerapp.h"
 #include "junviewerwin.h"
-#include "cmrf.h"
-
 
 int
 main (int argc,
@@ -31,13 +29,8 @@ main (int argc,
 {
   srand (time (NULL));
 
-  cmrf_init (0);
-  cmrf_add_path_relative ("res");
-  cmrf_add_path_cmake_prefix ("share/jvc");
-
   JunViewerApp *app = jun_viewer_app_new ();
   int result = g_application_run (G_APPLICATION (app), argc, argv);
 
-  cmrf_exit ();
   return result;
 }
